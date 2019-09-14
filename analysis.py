@@ -8,6 +8,7 @@ import user_input as usin
 import csv, os, re
 
 print("Created by Antony Simonoff. 9/14/2019.")
+print("Maintained on https://github.com/as4mo3/opera-analysis-li-lab/")
 pre_input, post_input = usin.file_locations()
 
 # Find results locations. Assumes only one measurement per folder. Assumes only one subdirectory with PRE/POST each.
@@ -80,6 +81,9 @@ title = usin.graph_title()
 pos_ctrl_x_input, pos_ctrl_y_input = pos_ctrl()
 pos_ctrl_x = []
 pos_ctrl_y = []
+print(pos_ctrl_x_input)
+print(pos_ctrl_y_input)
+input()
 for pos_ctrl_x_input, pos_ctrl_y_input in zip(pos_ctrl_x_input, pos_ctrl_y_input):
     x = max_brightness_mat[pos_ctrl_x_input][pos_ctrl_y_input]
     y = delF_mat[pos_ctrl_x_input][pos_ctrl_y_input]
