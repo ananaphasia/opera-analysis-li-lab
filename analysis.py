@@ -5,11 +5,21 @@ from pos_ctrl import *
 from graphing import *
 from output import *
 import user_input as usin
-import csv, os, re
+import csv, os, re, ast
 
-print("Created by Antony Simonoff. 9/14/2019.")
+# Print inital statements
+print("Created by Antony Simonoff. 9/19/2019.")
 print("Maintained on https://github.com/as4mo3/opera-analysis-li-lab/")
+
+# Get file locations from user
 pre_input, post_input = usin.file_locations()
+
+# Check if colors file exists for custom colors. If not, initalize stardard list of colors.
+if os.path.exists('colors.txt') == True:
+    with open('colors.txt') as f:
+        colors = ast.literal_eval(f.readline())
+else:
+    colors = ("green", "red", "cyan", "magenta", "yellow", "black", "purple", "blue", "xkcd:azure", "xkcd:chocolate", "xkcd:gold", "xkcd:maroon", "xkcd:plum", "xkcd:silver", "xkcd:teal", "xkcd:chartreuse", "xkcd:cyan", "xkcd:fuchsia", "xkcd:lightblue", "xkcd:magenta")
 
 # Find results locations. Assumes only one measurement per folder. Assumes only one subdirectory with PRE/POST each.
 if pre_input == '' and post_input == '':
@@ -24,7 +34,8 @@ if pre_input == '' and post_input == '':
     if pre_file_top == [] or post_file_top == []:
         raise Exception("Make sure PRE and POST files include 'pre' and 'post' (case insensitive) in their name.")
 else:
-    pre_file_top = post_file_top = []
+    pre_file_top = []
+    post_file_top = []
 
     pre_file_top.append(pre_input)
     post_file_top.append(post_input)
@@ -48,10 +59,10 @@ del pre_list[:9]
 del post_list[:9]
 
 # initalize matrices
-pre_matrix = np.zeros((8, 12))
-post_matrix = np.zeros((8, 12))
-max_brightness_mat = np.zeros((8, 12))
-delF_mat = np.zeros((8, 12))
+pre_matrix = np.empty((8, 12))
+post_matrix = np.empty((8, 12))
+max_brightness_mat = np.empty((8, 12))
+delF_mat = np.empty((8, 12))
 
 # filter out empty values from data set lists
 pre_list[:] = [list(filter(None, entry)) for entry in pre_list]
@@ -72,18 +83,12 @@ for (pre, post) in zip(pre_list, post_list):
     col = int(post[1]) - 1
     delF_mat[row][col] = x
 
-# TODO: label specific points
-
-# TODO: output max_brightness_mat, delF_mat, standard devation, etc to excel file
 title = usin.graph_title()
 
 # Find positive control locations and values
 pos_ctrl_x_input, pos_ctrl_y_input = pos_ctrl()
 pos_ctrl_x = []
 pos_ctrl_y = []
-print(pos_ctrl_x_input)
-print(pos_ctrl_y_input)
-input()
 for pos_ctrl_x_input, pos_ctrl_y_input in zip(pos_ctrl_x_input, pos_ctrl_y_input):
     x = max_brightness_mat[pos_ctrl_x_input][pos_ctrl_y_input]
     y = delF_mat[pos_ctrl_x_input][pos_ctrl_y_input]
@@ -93,18 +98,20 @@ pos_ctrls = (pos_ctrl_x, pos_ctrl_y)
 
 print("Is this for preliminary screening (2 libraries)? Y/N")
 prelim_screen_yn = input().upper()
-colors = ("green", "red", "cyan", "magenta", "yellow", "black", "purple", "blue", "xkcd:azure", "xkcd:chocolate", "xkcd:gold", "xkcd:maroon", "xkcd:plum", "xkcd:silver", "xkcd:teal", "xkcd:chartreuse", "xkcd:cyan", "xkcd:fuchsia", "xkcd:lightblue", "xkcd:magenta")
+
 if prelim_screen_yn == 'Y':
     print("Do you want to graph one library at a time? Y/N")
     one_library = input().upper()
 
     # Make standard graph for two libraries
     library_1_name, library_2_name = usin.library_names()
-    # Use all data, graph
+    # Split data into two libraries
     lib_1 = (max_brightness_mat[:6], delF_mat[:6])
     lib_2 = (max_brightness_mat[6:], delF_mat[6:])
 
     if one_library == "Y":
+        # Graph each library, one at a time
+
         data = (lib_1, )
         labels = (library_1_name, )
         if len(pos_ctrl_x) > 0:
@@ -118,13 +125,15 @@ if prelim_screen_yn == 'Y':
             labels = (library_2_name, "Positive Controls",)
             data = (lib_2, pos_ctrls)
         graph_prelim(data, labels, colors, library_2_name)
-        output_to_excel(title, max_brightness_mat, delF_mat, two_lib=True, library_1_name=library_1_name, library_2_name=library_2_name)
+
     else:
+        # Graph both libraries on the same graph
         data = (lib_1, lib_2, pos_ctrls)
         labels = (library_1_name, library_2_name)
-        # Output to graph
         graph_prelim(data, labels, colors, title)
-        output_to_excel(title, max_brightness_mat, delF_mat)
+
+    # Output data to excel file
+    output_to_excel(title, max_brightness_mat, delF_mat, two_lib=True, library_1_name=library_1_name, library_2_name=library_2_name)
 
 else:
     data = ()

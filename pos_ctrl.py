@@ -1,7 +1,8 @@
 import user_input as usin
 
 def pos_ctrl():
-    pos_ctrl_x = pos_ctrl_y = []
+    pos_ctrl_x = []
+    pos_ctrl_y = []
 
     # ask user for inputs
     num_pos_ctrls = usin.num_pos_ctrls()

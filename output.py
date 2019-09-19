@@ -53,8 +53,6 @@ def output_to_excel(name, max_brightness_mat, delF_mat, two_lib=False, library_1
 
         row = 0
         col = 14
-        print(data)
-        print(labels)
         for data, label in zip(data, labels):
             x, y, x_std, y_std = data
             worksheet.write(row, col, label, cell_bold)

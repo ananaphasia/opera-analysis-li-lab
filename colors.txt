@@ -1,0 +1,3 @@
+("green", "red", "cyan", "magenta", "yellow", "black", "purple", "blue", "xkcd:azure", "xkcd:chocolate", "xkcd:gold", "xkcd:maroon", "xkcd:plum", "xkcd:silver", "xkcd:teal", "xkcd:chartreuse", "xkcd:cyan", "xkcd:fuchsia", "xkcd:lightblue", "xkcd:magenta")
+
+Colors are listed on https://matplotlib.org/2.0.2/api/colors_api.html.
