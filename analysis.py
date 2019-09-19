@@ -1,7 +1,6 @@
 # Created by Antony Simonoff. 9/14/2019.
 
 import numpy as np
-from pos_ctrl import *
 from graphing import *
 from output import *
 import user_input as usin
@@ -19,7 +18,7 @@ if os.path.exists('colors.txt') == True:
     with open('colors.txt') as f:
         colors = ast.literal_eval(f.readline())
 else:
-    colors = ("green", "red", "cyan", "magenta", "yellow", "black", "purple", "blue", "xkcd:azure", "xkcd:chocolate", "xkcd:gold", "xkcd:maroon", "xkcd:plum", "xkcd:silver", "xkcd:teal", "xkcd:chartreuse", "xkcd:cyan", "xkcd:fuchsia", "xkcd:lightblue", "xkcd:magenta")
+    colors = ("green", "red", "cyan", "magenta", "yellow", "black", "purple", "blue", "xkcd:azure", "xkcd:chocolate", "xkcd:gold", "xkcd:maroon", "xkcd:plum", "xkcd:silver", "xkcd:teal", "xkcd:chartreuse", "xkcd:cyan", "xkcd:fuchsia", "xkcd:lightblue", "xkcd:magenta", "xkcd:goldenrod", "darkred", "darkkhaki", "steelblue", "deepskyblue", "darkturquoise", "fuchsia", "mediumvioletred", "deeppink", "slateblue", "limegreen", "dimgrey", "darkcyan")
 
 # Find results locations. Assumes only one measurement per folder. Assumes only one subdirectory with PRE/POST each.
 if pre_input == '' and post_input == '':
@@ -86,16 +85,29 @@ for (pre, post) in zip(pre_list, post_list):
 title = usin.graph_title()
 
 # Find positive control locations and values
-pos_ctrl_x_input, pos_ctrl_y_input = pos_ctrl()
+print("Are there positive controls? Y/N")
+num_pos_ctrls = input().upper()
+
 pos_ctrl_x = []
 pos_ctrl_y = []
-for pos_ctrl_x_input, pos_ctrl_y_input in zip(pos_ctrl_x_input, pos_ctrl_y_input):
-    x = max_brightness_mat[pos_ctrl_x_input][pos_ctrl_y_input]
-    y = delF_mat[pos_ctrl_x_input][pos_ctrl_y_input]
-    pos_ctrl_x.append(x)
-    pos_ctrl_y.append(y)
-pos_ctrls = (pos_ctrl_x, pos_ctrl_y)
 
+if num_pos_ctrls == 'Y':
+    print("Where is the top left corner of the positive controls?")
+    top_left = usin.convert_letters_numbers()
+    print("Where is the bottom right corner of the positive controls?")
+    bottom_right = usin.convert_letters_numbers()
+
+    for i in max_brightness_mat[top_left[0]:bottom_right[0]+1, top_left[1]:bottom_right[1]+1]:
+        for j in i:
+            pos_ctrl_x.append(j)
+
+    for i in delF_mat[top_left[0]:bottom_right[0]+1, top_left[1]:bottom_right[1]+1]:
+        for j in i:
+            pos_ctrl_y.append(j)
+
+    pos_ctrls = (pos_ctrl_x, pos_ctrl_y)
+
+# Check for preliminary vs repeat graphing
 print("Is this for preliminary screening (2 libraries)? Y/N")
 prelim_screen_yn = input().upper()
 
@@ -115,14 +127,14 @@ if prelim_screen_yn == 'Y':
         data = (lib_1, )
         labels = (library_1_name, )
         if len(pos_ctrl_x) > 0:
-            labels = (library_1_name, "Positive Controls",)
+            labels = (library_1_name, "Positive Controls", )
             data = (lib_1, pos_ctrls)
         graph_prelim(data, labels, colors, library_1_name)
 
         data = (lib_2, )
         labels = (library_2_name)
         if len(pos_ctrl_x) > 0:
-            labels = (library_2_name, "Positive Controls",)
+            labels = (library_2_name, "Positive Controls", )
             data = (lib_2, pos_ctrls)
         graph_prelim(data, labels, colors, library_2_name)
 
@@ -130,6 +142,9 @@ if prelim_screen_yn == 'Y':
         # Graph both libraries on the same graph
         data = (lib_1, lib_2, pos_ctrls)
         labels = (library_1_name, library_2_name)
+        if len(pos_ctrl_x) > 0:
+            labels = labels + ("Positive Controls", )
+            data = data + (pos_ctrls, )
         graph_prelim(data, labels, colors, title)
 
     # Output data to excel file
@@ -138,32 +153,48 @@ if prelim_screen_yn == 'Y':
 else:
     data = ()
     labels = ()
-    # Ask how many repeat candidates
-    print("How many repeat candidates?")
-    num_repeats = int(input())
-    for i in range(num_repeats):
-        name = usin.repeat_candidate_name(i)
-        print("Where is the top left corner of repeat candidate #{}?".format(i+1))
-        top_left = usin.convert_letters_numbers()
-        print("Where is the bottom right corner of repeat candidate #{}?".format(i+1))
-        bottom_right = usin.convert_letters_numbers()
 
-        x = np.mean(max_brightness_mat[top_left[1]:bottom_right[1]+1, top_left[0]:bottom_right[0]+1])
-        y = np.mean(delF_mat[top_left[1]:bottom_right[1]+1, top_left[0]:bottom_right[0]+1])
-        x_std = np.std(max_brightness_mat[top_left[1]:bottom_right[1]+1, top_left[0]:bottom_right[0]+1])
-        y_std = np.std(delF_mat[top_left[1]:bottom_right[1]+1, top_left[0]:bottom_right[0]+1])
+    # Take data from each repeat candidate
+    # Assume standard plate arrangement: 3 wells / candidate, horizontal
+    # 32 possible repeat candidates total
 
+    print("Do you want to label candidates? If not, they will be labeled sequentially. Y/N")
+    labeling = input().upper()
 
-        data = data + ((x, y, x_std, y_std), )
-        labels = labels + (name, )
-
+    # Add positive controls first due to long list of candidates.
     if len(pos_ctrl_x) > 1:
         x = np.mean(pos_ctrls[0])
         y = np.mean(pos_ctrls[1])
         x_std = np.std(pos_ctrls[0])
         y_std = np.std(pos_ctrls[1])
         data = data + ((x, y, x_std, y_std, ), )
-        labels = labels + ("Positive Control",)
+        labels = labels + ("Positive Control", )
+
+    rpt_candidate_number = 0
+
+    # Iterate over each 3-horizontal well location of each candidate
+    # Find average and standard deviation.
+    for row in range(0, 8):
+        for candidate_index in range(0, 4):
+            x = np.mean(max_brightness_mat[row:row+1, candidate_index*3:candidate_index*3+3])
+            y = np.mean(delF_mat[row:row+1, candidate_index*3:candidate_index*3+3])
+            x_std = np.std(max_brightness_mat[row:row+1, candidate_index*3:candidate_index*3+3])
+            y_std = np.std(delF_mat[row:row+1, candidate_index*3:candidate_index*3+3])
+
+            data = data + ((x, y, x_std, y_std), )
+
+            if labeling == 'Y':
+                rpt_candidate_number += 1
+
+                # FIXME: off by one error.
+                name = usin.repeat_candidate_name(rpt_candidate_number-1)
+                if name == '':
+                    name = "Rpt Candidate #{}".format(rpt_candidate_number)
+                labels = labels + (name, )
+            else:
+                rpt_candidate_number += 1
+                labels = labels + ("Rpt Candidate #{}".format(rpt_candidate_number), )
+
 
     output_to_excel(title, max_brightness_mat, delF_mat, rpt=True, data=data, labels=labels)
 

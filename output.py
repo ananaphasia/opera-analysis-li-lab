@@ -46,6 +46,7 @@ def output_to_excel(name, max_brightness_mat, delF_mat, two_lib=False, library_1
         worksheet.conditional_format('G12:L19', {'type': '3_color_scale'})
 
     if rpt == True:
+        # Add stardard deviation and mean values of each group of wells
         worksheet.write('N2', "Average X", cell_bold)
         worksheet.write('N3', "Average Y", cell_bold)
         worksheet.write('N4', "SD X", cell_bold)
@@ -53,6 +54,7 @@ def output_to_excel(name, max_brightness_mat, delF_mat, two_lib=False, library_1
 
         row = 0
         col = 14
+        # Iterate over each entry in data
         for data, label in zip(data, labels):
             x, y, x_std, y_std = data
             worksheet.write(row, col, label, cell_bold)

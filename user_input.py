@@ -1,4 +1,5 @@
-# All user inputs. Does NOT catch errors.
+# Some user inputs. Does NOT catch errors.
+# TODO: Bring all user inputs to one location, or not at all.
 
 def file_locations():
     print("What is the path to the top folder of the PRE file (what is the location of folder containing Evaluation1 and indexfile.txt for PRE analysis)?  \nLeave blank if it is in this folder (if left blank, make sure that there is only one folder containing PRE in this directory, and the folder must have PRE in its name).")
@@ -23,7 +24,7 @@ def repeat_candidate_name(i):
 
 def num_pos_ctrls():
     print("How many positive controls? Leave blank if none.")
-    num_pos_ctrls = input()
+    num_pos_ctrls = int(input())
     if num_pos_ctrls == '':
         num_pos_ctrls = 0
     return num_pos_ctrls

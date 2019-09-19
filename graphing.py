@@ -38,9 +38,9 @@ def graph_rpt(data, labels, colors, title):
     ax.set_position([box.x0, box.y0, box.width * 0.75, box.height])
 
     # Put a legend to the right of the current axis
-    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize='x-small')
 
     plt.title(title)
-    
+
     # Save graph
     plt.savefig('{}.png'.format(title))
