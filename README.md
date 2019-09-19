@@ -82,8 +82,7 @@ link is
 3.  Using analysis.exe
 
 
-> The following sections document how to use analysis.exe, with visual
-> aids.
+The following sections document how to use analysis.exe, with visual aids.
 
 3\. a. Finding file paths
 
