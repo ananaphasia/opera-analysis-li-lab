@@ -252,4 +252,4 @@ be found here
 analysis.exe and its Python files are maintained on
 (<https://github.com/as4mo3/opera-analysis-li-lab>). If you find any
 errors, do not hesitate to contact Antony Simonoff at
-(<asimonoff1101@gmail.com>).
+(<asimonoff1101@gmail.com>) or on WeChat (as4mo3).
