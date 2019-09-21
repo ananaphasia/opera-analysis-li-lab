@@ -219,19 +219,20 @@ Figure 11. Labeling each repeat candidate.
 
 4\. Output files
 
-
 Each use of analysis.exe will output an Excel file, and graph(s). These
 files will be output to the same location as the analysis.exe file
-itself.
-
+itself (fig. 12).
 
 The Excel file will contain the maximum brightness matrix and the dF/d0
 matrix. Also, if the plate is used for repeat candidate screening, the
 Excel file will also contain the average X and Y values, and well as the
 appropriate standard deviations, of each candidate.
 
-
 The graph(s) will be outputted as .png files.
+
+![](./media/image12.png)
+
+Figure 12. Output files.
 
 5\. Modifying color list
 
